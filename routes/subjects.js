@@ -64,6 +64,15 @@ router.delete("/:id", async (req, res) => {
     const Session = require("../models/Session");
     await Session.deleteMany({ subject: subject._id, user: req.userId });
 
+    // Also clean up any uploaded study resources for this subject (files + DB records)
+    const Resource = require("../models/Resource");
+    const cloudinary = require("../config/cloudinary");
+    const resources = await Resource.find({ subject: subject._id, user: req.userId });
+    await Promise.all(
+        resources.map(r => cloudinary.uploader.destroy(r.publicId, { resource_type: r.cloudinaryResourceType }).catch(() => {}))
+    );
+    await Resource.deleteMany({ subject: subject._id, user: req.userId });
+
     res.json({ success: true });
 });
 

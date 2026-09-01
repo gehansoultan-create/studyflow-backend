@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth");
 const subjectRoutes = require("./routes/subjects");
 const taskRoutes = require("./routes/tasks");
 const sessionRoutes = require("./routes/sessions");
+const resourceRoutes = require("./routes/resources");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/resources", resourceRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: "Route not found." }));
