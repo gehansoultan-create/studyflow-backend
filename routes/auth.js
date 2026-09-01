@@ -91,7 +91,13 @@ router.post("/forgot-password", async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5500";
         const resetLink = `${frontendUrl}/index.html?resetToken=${rawToken}`;
 
-        await sendPasswordResetEmail(user.email, resetLink);
+        // Send the email, but don't let a slow/failed SMTP connection turn into
+        // a user-facing error — the reset token is already saved either way.
+        try {
+            await sendPasswordResetEmail(user.email, resetLink);
+        } catch (emailError) {
+            console.error("sendPasswordResetEmail failed:", emailError.message);
+        }
 
         res.json(genericMessage);
     } catch (error) {
