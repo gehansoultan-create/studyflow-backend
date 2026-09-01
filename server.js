@@ -13,6 +13,11 @@ const resourceRoutes = require("./routes/resources");
 
 const app = express();
 
+// Railway (and most PaaS hosts) sit behind a reverse proxy, so Express needs
+// this to correctly read the real client IP from X-Forwarded-For — without
+// it, express-rate-limit throws validation warnings/errors.
+app.set("trust proxy", 1);
+
 // --- middleware ---
 const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(o => o.trim()).filter(Boolean);
 app.use(cors({
